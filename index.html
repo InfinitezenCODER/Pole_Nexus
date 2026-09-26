@@ -1,0 +1,2227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pole Nexus — AI-Powered NSC Decision Support</title>
+<style>
+  :root {
+    --navy: #0a1628;
+    --navy-light: #132038;
+    --navy-mid: #1a2d4a;
+    --blue: #2563eb;
+    --blue-light: #3b82f6;
+    --blue-pale: #dbeafe;
+    --green: #059669;
+    --green-light: #d1fae5;
+    --green-bg: #ecfdf5;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+    --shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,.1), 0 4px 6px rgba(0,0,0,.05);
+    --radius: 10px;
+    --radius-lg: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--gray-100);
+    color: var(--gray-800);
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  .app-header {
+    background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+    color: white;
+    padding: 0 24px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  }
+
+  .header-left { display: flex; align-items: center; gap: 16px; }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -.3px;
+  }
+
+  .logo-icon {
+    width: 34px; height: 34px;
+    background: var(--blue);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .header-subtitle {
+    font-size: 12px;
+    color: var(--gray-400);
+    border-left: 1px solid var(--gray-600);
+    padding-left: 16px;
+    letter-spacing: .3px;
+  }
+
+  .header-right { display: flex; align-items: center; gap: 16px; }
+
+  .demo-badge {
+    background: var(--amber);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: .5px;
+    cursor: pointer;
+  }
+
+  .area-badge {
+    background: rgba(255,255,255,.12);
+    padding: 5px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .user-profile {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px;
+  }
+
+  .user-avatar {
+    width: 32px; height: 32px;
+    background: var(--blue);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  /* LAYOUT */
+  .app-layout { display: flex; min-height: calc(100vh - 60px); }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 220px;
+    background: white;
+    border-right: 1px solid var(--gray-200);
+    padding: 16px 0;
+    flex-shrink: 0;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    font-size: 14px;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all .15s;
+    border-left: 3px solid transparent;
+  }
+
+  .nav-item:hover { background: var(--gray-50); color: var(--gray-800); }
+  .nav-item.active {
+    background: var(--blue-pale);
+    color: var(--blue);
+    font-weight: 600;
+    border-left-color: var(--blue);
+  }
+
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+  .nav-divider { height: 1px; background: var(--gray-200); margin: 12px 16px; }
+
+  /* MAIN */
+  .main-content {
+    flex: 1;
+    padding: 24px;
+    max-width: 1200px;
+    overflow-y: auto;
+  }
+
+  /* CARDS */
+  .card {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-header h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gray-800);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-body { padding: 20px; }
+
+  /* BUTTONS */
+  .btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all .15s;
+    letter-spacing: -.1px;
+  }
+
+  .btn-primary { background: var(--blue); color: white; }
+  .btn-primary:hover { background: var(--blue-light); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  .btn-success { background: var(--green); color: white; }
+  .btn-success:hover { opacity: .9; }
+  .btn-outline { background: white; color: var(--gray-700); border: 1px solid var(--gray-300); }
+  .btn-outline:hover { background: var(--gray-50); }
+  .btn-lg { padding: 14px 28px; font-size: 15px; border-radius: 10px; }
+  .btn-sm { padding: 6px 14px; font-size: 12px; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* STATS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 18px;
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 6px;
+  }
+
+  .stat-value {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -.5px;
+  }
+
+  .stat-sub {
+    font-size: 12px;
+    color: var(--green);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* BADGE */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .badge-green { background: var(--green-light); color: var(--green); }
+  .badge-amber { background: var(--amber-light); color: var(--amber); }
+  .badge-red { background: var(--red-light); color: var(--red); }
+  .badge-blue { background: var(--blue-pale); color: var(--blue); }
+
+  /* TABLE */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .data-table th {
+    text-align: left;
+    padding: 10px 14px;
+    background: var(--gray-50);
+    color: var(--gray-600);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gray-100);
+    color: var(--gray-700);
+  }
+
+  .data-table tr:hover td { background: var(--gray-50); }
+
+  /* FORM */
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 5px;
+  }
+
+  .form-input, .form-select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--gray-300);
+    border-radius: 7px;
+    font-size: 14px;
+    color: var(--gray-800);
+    background: white;
+    transition: border-color .15s;
+  }
+
+  .form-input:focus, .form-select:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+  }
+
+  /* PROGRESS STEPS */
+  .step-progress {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 24px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-400);
+    white-space: nowrap;
+    position: relative;
+  }
+
+  .step-item.active { color: var(--blue); }
+  .step-item.done { color: var(--green); }
+
+  .step-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--gray-200);
+    color: var(--gray-500);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .step-item.active .step-num { background: var(--blue); color: white; }
+  .step-item.done .step-num { background: var(--green); color: white; }
+
+  .step-arrow { color: var(--gray-300); font-size: 14px; margin: 0 2px; }
+
+  /* UPLOAD ZONE */
+  .upload-zone {
+    border: 2px dashed var(--gray-300);
+    border-radius: var(--radius-lg);
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    background: var(--gray-50);
+  }
+
+  .upload-zone:hover { border-color: var(--blue); background: var(--blue-pale); }
+
+  .upload-zone .icon {
+    font-size: 40px;
+    color: var(--gray-400);
+    margin-bottom: 12px;
+  }
+
+  .upload-zone h4 { color: var(--gray-700); margin-bottom: 4px; }
+  .upload-zone p { font-size: 13px; color: var(--gray-500); }
+
+  /* PHOTO ANALYSIS */
+  .photo-container {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: #000;
+  }
+
+  .photo-container canvas {
+    display: block;
+    max-width: 100%;
+    border-radius: var(--radius);
+  }
+
+  /* PROCESSING STEPS */
+  .process-steps { list-style: none; }
+
+  .process-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 14px;
+    color: var(--gray-500);
+  }
+
+  .process-step.done { color: var(--green); }
+  .process-step.active { color: var(--blue); }
+
+  .process-step .icon { width: 20px; text-align: center; }
+
+  /* SCORE BAR */
+  .score-bar-container { display: flex; align-items: center; gap: 10px; }
+
+  .score-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--gray-200);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width .8s ease;
+  }
+
+  .score-value { font-weight: 700; font-size: 14px; min-width: 36px; }
+
+  /* MAP */
+  .map-container {
+    height: 350px;
+    background: #e8ecf2;
+    border-radius: var(--radius);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .map-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(148,163,184,.15) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148,163,184,.15) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+
+  .map-road {
+    position: absolute;
+    background: rgba(148,163,184,.25);
+  }
+
+  .map-marker {
+    position: absolute;
+    transform: translate(-50%, -100%);
+    cursor: pointer;
+    z-index: 10;
+    transition: transform .15s;
+  }
+
+  .map-marker:hover { transform: translate(-50%, -100%) scale(1.15); }
+
+  .map-marker-dot {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: var(--shadow-md);
+    position: relative;
+  }
+
+  .map-marker-dot::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid white;
+  }
+
+  .map-marker-label {
+    position: absolute;
+    top: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--navy);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: var(--shadow);
+  }
+
+  .map-legend {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: white;
+    padding: 10px 14px;
+    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* CHAIN */
+  .chain-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    padding: 12px 0;
+  }
+
+  .chain-node {
+    background: white;
+    border: 2px solid var(--blue);
+    border-radius: 10px;
+    padding: 12px 18px;
+    text-align: center;
+    min-width: 120px;
+    flex-shrink: 0;
+  }
+
+  .chain-node .label { font-size: 10px; color: var(--gray-500); text-transform: uppercase; letter-spacing: .5px; }
+  .chain-node .value { font-size: 14px; font-weight: 700; color: var(--navy); margin-top: 2px; }
+  .chain-arrow { font-size: 20px; color: var(--blue); margin: 0 4px; flex-shrink: 0; }
+
+  /* FEASIBILITY */
+  .feasibility-result {
+    text-align: center;
+    padding: 32px;
+  }
+
+  .feasibility-icon { font-size: 56px; margin-bottom: 8px; }
+  .feasibility-label { font-size: 28px; font-weight: 800; letter-spacing: -.5px; }
+  .feasibility-note { font-size: 13px; color: var(--gray-500); margin-top: 8px; font-style: italic; }
+
+  .check-list { list-style: none; }
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 14px;
+  }
+
+  .check-icon { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
+
+  /* PAGE TITLES */
+  .page-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 4px;
+    letter-spacing: -.3px;
+  }
+
+  .page-subtitle { font-size: 14px; color: var(--gray-500); margin-bottom: 20px; }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+  @media (max-width: 900px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+
+  .mb-16 { margin-bottom: 16px; }
+  .mb-20 { margin-bottom: 20px; }
+  .mb-24 { margin-bottom: 24px; }
+  .mt-16 { margin-top: 16px; }
+  .mt-24 { margin-top: 24px; }
+  .gap-16 { gap: 16px; }
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .items-center { align-items: center; }
+  .justify-between { justify-content: space-between; }
+  .text-center { text-align: center; }
+
+  /* FADE IN */
+  .fade-in {
+    animation: fadeIn .4s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2.5px solid var(--gray-300);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin .6s linear infinite;
+  }
+
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
+  .pulse { animation: pulse 1.2s ease infinite; }
+
+  /* DETECTION BOX OVERLAY */
+  .detection-overlay {
+    position: absolute;
+    border: 2px solid;
+    border-radius: 4px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .detection-label {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    color: white;
+    position: absolute;
+    top: -18px;
+    left: -2px;
+    border-radius: 3px 3px 0 0;
+    white-space: nowrap;
+  }
+
+  /* HERO CTA */
+  .hero-cta {
+    background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+    border-radius: var(--radius-lg);
+    padding: 36px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .hero-cta h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .hero-cta p { color: var(--gray-400); font-size: 14px; }
+
+  /* POLE CARD */
+  .pole-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .pole-info-item {
+    padding: 12px;
+    background: var(--gray-50);
+    border-radius: 8px;
+    border: 1px solid var(--gray-100);
+  }
+
+  .pole-info-item .label { font-size: 11px; color: var(--gray-500); text-transform: uppercase; letter-spacing: .5px; }
+  .pole-info-item .value { font-size: 16px; font-weight: 700; color: var(--navy); margin-top: 2px; }
+
+  /* COMPARISON ROW */
+  .compare-row {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--gray-100);
+    gap: 16px;
+    transition: background .15s;
+  }
+
+  .compare-row:hover { background: var(--gray-50); }
+  .compare-row.highlight { background: var(--green-bg); border-left: 3px solid var(--green); }
+
+  .compare-pole-id {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--navy);
+    min-width: 60px;
+  }
+
+  .compare-detail { flex: 1; display: flex; gap: 24px; font-size: 13px; color: var(--gray-600); }
+
+  /* NOTIFICATION */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--navy);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    box-shadow: var(--shadow-lg);
+    font-size: 14px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: slideUp .3s ease;
+    max-width: 360px;
+  }
+
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+  .hidden { display: none !important; }
+
+  /* INFO TOOLTIP POPUP ON MAP */
+  .map-popup {
+    position: absolute;
+    background: white;
+    border-radius: 10px;
+    box-shadow: var(--shadow-lg);
+    padding: 14px 18px;
+    font-size: 13px;
+    z-index: 20;
+    min-width: 200px;
+    border: 1px solid var(--gray-200);
+  }
+
+  .map-popup h4 { font-size: 15px; color: var(--navy); margin-bottom: 8px; }
+  .map-popup .row { display: flex; justify-content: space-between; padding: 3px 0; }
+  .map-popup .row .lbl { color: var(--gray-500); }
+  .map-popup .row .val { font-weight: 600; color: var(--gray-800); }
+
+  /* DATABASE TABLE AREA */
+  .db-search {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    align-items: center;
+  }
+
+  .db-search input {
+    flex: 1;
+    max-width: 300px;
+  }
+
+  /* WHY SECTION */
+  .why-list { list-style: none; }
+  .why-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 14px;
+    color: var(--gray-700);
+  }
+
+  /* FINAL SCREEN */
+  .final-screen {
+    text-align: center;
+    padding: 48px 24px;
+  }
+
+  .final-screen .tagline {
+    font-size: 18px;
+    color: var(--gray-600);
+    margin-top: 8px;
+    font-weight: 500;
+  }
+
+  .final-screen .flow-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--blue);
+    margin-top: 16px;
+    letter-spacing: .5px;
+  }
+
+  .final-screen .loop-msg {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-top: 12px;
+    font-style: italic;
+    max-width: 460px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .wow-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 24px;
+    text-align: left;
+  }
+
+  .wow-card {
+    padding: 18px;
+    border-radius: var(--radius);
+    border: 1px solid var(--gray-200);
+    background: white;
+  }
+
+  .wow-card .num { font-size: 11px; font-weight: 800; color: var(--blue); margin-bottom: 4px; }
+  .wow-card h4 { font-size: 14px; color: var(--navy); margin-bottom: 4px; }
+  .wow-card p { font-size: 12px; color: var(--gray-500); }
+
+  /* SECTION BREAKS */
+  .section-break {
+    border: none;
+    border-top: 1px solid var(--gray-200);
+    margin: 24px 0;
+  }
+
+  .status-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .status-tag.ok { color: var(--green); }
+  .status-tag.warn { color: var(--amber); }
+
+  /* fallback highlight */
+  .fallback-box {
+    border: 2px solid var(--amber);
+    background: var(--amber-light);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 16px 0;
+  }
+
+  .fallback-box h4 { color: var(--amber); font-size: 14px; margin-bottom: 4px; }
+  .fallback-box p { font-size: 13px; color: var(--gray-700); }
+
+  .ai-box {
+    border: 2px solid var(--green);
+    background: var(--green-bg);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin: 12px 0;
+  }
+
+  .ai-box h4 { color: var(--green); font-size: 14px; margin-bottom: 4px; }
+  .ai-box p { font-size: 13px; color: var(--gray-700); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="header-left">
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      Pole Nexus
+    </div>
+    <span class="header-subtitle">AI-Powered NSC Decision Support</span>
+  </div>
+  <div class="header-right">
+    <div class="demo-badge" title="All data is simulated for demonstration">DEMO MODE</div>
+    <div class="area-badge">📍 Sector 5</div>
+    <div class="user-profile">
+      <div class="user-avatar">RK</div>
+      <span>R. Kumar</span>
+    </div>
+  </div>
+</header>
+
+<!-- LAYOUT -->
+<div class="app-layout">
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="nav-item active" data-page="dashboard" onclick="showPage('dashboard')">
+      <span class="nav-icon">📊</span> Dashboard
+    </div>
+    <div class="nav-item" data-page="new-assessment" onclick="showPage('new-assessment')">
+      <span class="nav-icon">➕</span> New NSC Assessment
+    </div>
+    <div class="nav-item" data-page="pole-database" onclick="showPage('pole-database')">
+      <span class="nav-icon">🗄️</span> Pole Database
+    </div>
+    <div class="nav-item" data-page="gis-map-page" onclick="showPage('gis-map-page')">
+      <span class="nav-icon">🗺️</span> GIS Map
+    </div>
+    <div class="nav-item" data-page="history" onclick="showPage('history')">
+      <span class="nav-icon">📋</span> Assessment History
+    </div>
+    <div class="nav-divider"></div>
+    <div class="nav-item" style="font-size:12px;color:var(--gray-400)">
+      <span class="nav-icon">ℹ️</span> v1.0 Prototype
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="main-content" id="mainContent">
+    <!-- pages injected here -->
+  </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast hidden" id="toast"></div>
+
+<!-- Hidden file input -->
+<input type="file" id="fileInput" accept="image/*" class="hidden">
+
+<script>
+// ============ DATA ============
+const POLES = [
+  { id:'P-102', lat:28.6145, lng:77.2090, transformer:'T-07', txCapacity:100, feeder:'F-03', phase:'3-Phase', voltage:'11 kV', connections:18, existingLoad:68, availableCapacity:32, type:'Steel Tubular', status:'Active', area:'Sector 5 - Block A' },
+  { id:'P-108', lat:28.6149, lng:77.2105, transformer:'T-07', txCapacity:100, feeder:'F-03', phase:'3-Phase', voltage:'11 kV', connections:24, existingLoad:82, availableCapacity:18, type:'RCC', status:'Active', area:'Sector 5 - Block A' },
+  { id:'P-115', lat:28.6138, lng:77.2118, transformer:'T-12', txCapacity:63, feeder:'F-03', phase:'3-Phase', voltage:'11 kV', connections:31, existingLoad:57, availableCapacity:6, type:'Steel Tubular', status:'Active', area:'Sector 5 - Block B' },
+  { id:'P-121', lat:28.6155, lng:77.2078, transformer:'T-12', txCapacity:63, feeder:'F-05', phase:'3-Phase', voltage:'11 kV', connections:15, existingLoad:41, availableCapacity:22, type:'Wooden', status:'Active', area:'Sector 5 - Block B' },
+  { id:'P-124', lat:28.6161, lng:77.2095, transformer:'T-18', txCapacity:200, feeder:'F-05', phase:'3-Phase', voltage:'11 kV', connections:38, existingLoad:142, availableCapacity:58, type:'Steel Lattice', status:'Active', area:'Sector 5 - Block C' },
+  { id:'P-130', lat:28.6133, lng:77.2083, transformer:'T-18', txCapacity:200, feeder:'F-05', phase:'3-Phase', voltage:'11 kV', connections:12, existingLoad:89, availableCapacity:111, type:'RCC', status:'Active', area:'Sector 5 - Block C' },
+  { id:'P-137', lat:28.6142, lng:77.2112, transformer:'T-22', txCapacity:100, feeder:'F-08', phase:'1-Phase', voltage:'11 kV', connections:9, existingLoad:34, availableCapacity:66, type:'Steel Tubular', status:'Active', area:'Sector 5 - Block D' },
+  { id:'P-141', lat:28.6158, lng:77.2070, transformer:'T-22', txCapacity:100, feeder:'F-08', phase:'1-Phase', voltage:'11 kV', connections:21, existingLoad:71, availableCapacity:29, type:'RCC', status:'Under Maintenance', area:'Sector 5 - Block D' },
+];
+
+const CANDIDATES = [
+  { id:'P-102', distance:35, confidence:96, score:88 },
+  { id:'P-108', distance:52, confidence:89, score:74 },
+  { id:'P-115', distance:71, confidence:81, score:41 },
+];
+
+const NSC = { requestId:'NSC-2026-0142', area:'Sector 5', load:8 };
+
+let currentStep = 0;
+
+// ============ PAGES ============
+
+function dashboardHTML() {
+  return `
+  <div class="fade-in">
+    <div class="hero-cta">
+      <div>
+        <h2>New Service Connection Assessment</h2>
+        <p>Detect poles, match network data, and assess NSC feasibility from a site photograph.</p>
+      </div>
+      <button class="btn btn-primary btn-lg" onclick="showPage('new-assessment')">➕ Start New NSC Assessment</button>
+    </div>
+
+    <div class="flex justify-between items-center mb-16">
+      <div>
+        <h1 class="page-title">Sector 5 — Overview</h1>
+        <p class="page-subtitle">Area-wise pole database and network summary</p>
+      </div>
+      <span class="badge badge-green">● Network Records Updated</span>
+    </div>
+
+    <div class="stats-grid mb-24">
+      <div class="stat-card">
+        <div class="stat-label">Registered Poles</div>
+        <div class="stat-value">1,248</div>
+        <div class="stat-sub">✓ All poles digitized</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active Transformers</div>
+        <div class="stat-value">42</div>
+        <div class="stat-sub">✓ Capacity data available</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Feeders</div>
+        <div class="stat-value">16</div>
+        <div class="stat-sub">✓ Load data current</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending NSC Requests</div>
+        <div class="stat-value">23</div>
+        <div class="stat-sub" style="color:var(--amber)">⏳ Awaiting assessment</div>
+      </div>
+    </div>
+
+    <div class="grid-2 mb-24">
+      <div class="card">
+        <div class="card-header"><h3>📌 Recent NSC Assessments</h3></div>
+        <div class="card-body" style="padding:0;">
+          <table class="data-table">
+            <thead><tr><th>Request</th><th>Pole</th><th>Load</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>NSC-2026-0139</td><td>P-124</td><td>5 kVA</td><td><span class="badge badge-green">✓ Feasible</span></td></tr>
+              <tr><td>NSC-2026-0140</td><td>P-130</td><td>12 kVA</td><td><span class="badge badge-green">✓ Feasible</span></td></tr>
+              <tr><td>NSC-2026-0141</td><td>P-115</td><td>15 kVA</td><td><span class="badge badge-red">✗ Not Feasible</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>⚡ WOW: System Capabilities</h3></div>
+        <div class="card-body">
+          <div class="wow-grid" style="grid-template-columns:1fr;gap:10px;margin-top:0;">
+            <div style="display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--blue);font-weight:800;">1</span><div><strong style="font-size:13px;">Area-Wise Digital Pole Inventory</strong><br><span style="font-size:12px;color:var(--gray-500);">Pre-stored registered poles for every service area.</span></div></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--blue);font-weight:800;">2</span><div><strong style="font-size:13px;">Real-World Fallback Matching</strong><br><span style="font-size:12px;color:var(--gray-500);">Visual + GIS matching when OCR/QR fails.</span></div></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--blue);font-weight:800;">3</span><div><strong style="font-size:13px;">Physical → Digital Network Linking</strong><br><span style="font-size:12px;color:var(--gray-500);">Photograph → Pole → GIS → Transformer → Feeder → Load.</span></div></div>
+            <div style="display:flex;gap:10px;align-items:flex-start;"><span style="color:var(--blue);font-weight:800;">4</span><div><strong style="font-size:13px;">Explainable Multi-Pole Comparison</strong><br><span style="font-size:12px;color:var(--gray-500);">Ranked candidates with transparent reasoning.</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function poleDatabaseHTML() {
+  let rows = POLES.map(p => `
+    <tr>
+      <td><strong>${p.id}</strong></td>
+      <td>${p.transformer}</td>
+      <td>${p.feeder}</td>
+      <td>${p.phase}</td>
+      <td>${p.existingLoad} / ${p.txCapacity} kVA</td>
+      <td>${p.availableCapacity} kVA</td>
+      <td>${p.type}</td>
+      <td><span class="badge ${p.status==='Active'?'badge-green':'badge-amber'}">${p.status}</span></td>
+    </tr>
+  `).join('');
+
+  return `
+  <div class="fade-in">
+    <h1 class="page-title">Pole Database — Sector 5</h1>
+    <p class="page-subtitle">Pre-registered electrical pole inventory for the selected service area</p>
+
+    <div class="stats-grid mb-24">
+      <div class="stat-card"><div class="stat-label">Total Registered</div><div class="stat-value">1,248</div></div>
+      <div class="stat-card"><div class="stat-label">Active</div><div class="stat-value">1,241</div></div>
+      <div class="stat-card"><div class="stat-label">Under Maintenance</div><div class="stat-value">7</div></div>
+      <div class="stat-card"><div class="stat-label">Database Updated</div><div class="stat-value" style="font-size:16px;">2 hrs ago</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>🗄️ Registered Poles (Showing 8 of 1,248)</h3>
+        <span class="badge badge-blue">Sector 5</span>
+      </div>
+      <div class="card-body" style="padding:0;overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr><th>Pole ID</th><th>Transformer</th><th>Feeder</th><th>Phase</th><th>Load / Capacity</th><th>Available</th><th>Type</th><th>Status</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <p style="font-size:12px;color:var(--gray-400);margin-top:12px;text-align:center;">
+      Pole Nexus maintains a digital inventory of all registered poles. AI detection matches site photographs against this database.
+    </p>
+  </div>`;
+}
+
+function gisMapPageHTML() {
+  return `
+  <div class="fade-in">
+    <h1 class="page-title">GIS Map — Sector 5</h1>
+    <p class="page-subtitle">Spatial view of registered poles and network infrastructure</p>
+    <div class="card">
+      <div class="card-body" style="padding:12px;">
+        ${renderMap(null, true)}
+      </div>
+    </div>
+  </div>`;
+}
+
+function historyHTML() {
+  return `
+  <div class="fade-in">
+    <h1 class="page-title">Assessment History</h1>
+    <p class="page-subtitle">Previous NSC feasibility assessments</p>
+    <div class="card">
+      <div class="card-body" style="padding:0;">
+        <table class="data-table">
+          <thead><tr><th>Assessment ID</th><th>Date</th><th>Area</th><th>Pole</th><th>Required Load</th><th>Result</th><th>Decision</th></tr></thead>
+          <tbody>
+            <tr><td>NSC-2026-0139</td><td>2026-01-12</td><td>Sector 5</td><td>P-124</td><td>5 kVA</td><td><span class="badge badge-green">Feasible</span></td><td>Confirmed</td></tr>
+            <tr><td>NSC-2026-0140</td><td>2026-01-13</td><td>Sector 5</td><td>P-130</td><td>12 kVA</td><td><span class="badge badge-green">Feasible</span></td><td>Confirmed</td></tr>
+            <tr><td>NSC-2026-0141</td><td>2026-01-14</td><td>Sector 5</td><td>P-115</td><td>15 kVA</td><td><span class="badge badge-red">Not Feasible</span></td><td>Sent for Review</td></tr>
+            <tr><td>NSC-2026-0138</td><td>2026-01-10</td><td>Sector 5</td><td>P-108</td><td>3 kVA</td><td><span class="badge badge-green">Feasible</span></td><td>Confirmed</td></tr>
+            <tr><td>NSC-2026-0136</td><td>2026-01-08</td><td>Sector 3</td><td>P-054</td><td>20 kVA</td><td><span class="badge badge-amber">Review</span></td><td>Under Review</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ============ ASSESSMENT FLOW ============
+
+function getStepNames() {
+  return ['NSC Site','Photograph','AI Detection','Pole ID','Matching','GIS Map','Network','Feasibility','Comparison','Decision'];
+}
+
+function renderStepProgress(current) {
+  const names = getStepNames();
+  return `<div class="step-progress">${names.map((n,i) => {
+    let cls = i < current ? 'done' : i === current ? 'active' : '';
+    let icon = i < current ? '✓' : (i+1);
+    return `${i>0?'<span class="step-arrow">›</span>':''}
+    <div class="step-item ${cls}"><span class="step-num">${icon}</span>${n}</div>`;
+  }).join('')}</div>`;
+}
+
+function assessmentHTML() {
+  return `<div class="fade-in" id="assessmentContainer">
+    ${renderStepProgress(0)}
+    ${stepSiteInfo()}
+  </div>`;
+}
+
+function stepSiteInfo() {
+  return `
+  <div class="fade-in">
+    <h1 class="page-title">New NSC Assessment</h1>
+    <p class="page-subtitle">Step 1 — Enter NSC site information</p>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><h3>📋 NSC Request Details</h3></div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">Customer / Request ID</label>
+            <input class="form-input" value="NSC-2026-0142" id="reqId">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Proposed NSC Location</label>
+            <input class="form-input" value="Plot 42, Block A, Sector 5" id="location">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Service Area</label>
+            <select class="form-select" id="areaSelect">
+              <option selected>Sector 5</option>
+              <option>Sector 3</option>
+              <option>Sector 7</option>
+              <option>Sector 12</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Required Load (kVA)</label>
+            <input class="form-input" type="number" value="8" id="loadInput">
+          </div>
+          <div class="form-group">
+            <label class="form-label">GPS Coordinates (optional)</label>
+            <input class="form-input" value="28.6145, 77.2090" id="gpsInput">
+          </div>
+          <button class="btn btn-primary mt-16" onclick="goToUpload()">Continue to Photograph →</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>📍 Area Summary</h3></div>
+        <div class="card-body">
+          <div class="pole-info-grid">
+            <div class="pole-info-item"><div class="label">Area</div><div class="value">Sector 5</div></div>
+            <div class="pole-info-item"><div class="label">Registered Poles</div><div class="value">1,248</div></div>
+            <div class="pole-info-item"><div class="label">Active Transformers</div><div class="value">42</div></div>
+            <div class="pole-info-item"><div class="label">Feeders</div><div class="value">16</div></div>
+          </div>
+          <div style="margin-top:16px;padding:12px;background:var(--blue-pale);border-radius:8px;font-size:13px;color:var(--blue);">
+            ℹ️ Pole Nexus has a pre-loaded digital inventory of all registered poles in Sector 5. AI detection will match site photographs against this database.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function goToUpload() {
+  currentStep = 1;
+  document.getElementById('assessmentContainer').innerHTML = renderStepProgress(1) + stepUpload();
+  scrollTop();
+}
+
+function stepUpload() {
+  return `
+  <div class="fade-in">
+    <h1 class="page-title">Site Photograph</h1>
+    <p class="page-subtitle">Step 2 — Upload the technician's site photograph</p>
+    <div class="card">
+      <div class="card-body">
+        <div class="upload-zone" id="uploadZone" onclick="triggerUpload()">
+          <div class="icon">📷</div>
+          <h4>Upload Technician Site Photograph</h4>
+          <p>Drag & drop an image, or click to browse</p>
+          <p style="margin-top:8px;font-size:12px;color:var(--gray-400);">Supports JPG, PNG • For demo, any image works</p>
+          <button class="btn btn-outline mt-16" onclick="event.stopPropagation();triggerUpload()">📁 Browse Files</button>
+          <button class="btn btn-primary mt-16" style="margin-left:8px;" onclick="event.stopPropagation();useDemoImage()">🎯 Use Demo Image</button>
+        </div>
+        <div id="uploadPreview" class="hidden mt-24">
+          <div class="grid-2">
+            <div>
+              <canvas id="previewCanvas" width="560" height="380" style="border-radius:var(--radius);max-width:100%;background:#1a1a2e;"></canvas>
+            </div>
+            <div>
+              <h3 style="margin-bottom:12px;">Image Details</h3>
+              <div class="pole-info-grid">
+                <div class="pole-info-item"><div class="label">Image Quality</div><div class="value" style="color:var(--green);">Good ✓</div></div>
+                <div class="pole-info-item"><div class="label">GPS Metadata</div><div class="value" style="color:var(--green);">Available ✓</div></div>
+                <div class="pole-info-item"><div class="label">Resolution</div><div class="value">4032 × 3024</div></div>
+                <div class="pole-info-item"><div class="label">Timestamp</div><div class="value" style="font-size:13px;">2026-01-15 10:34</div></div>
+              </div>
+              <button class="btn btn-primary btn-lg mt-24" onclick="startAnalysis()" id="analyzeBtn" style="width:100%;">🔍 Analyze Photograph</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function triggerUpload() {
+  document.getElementById('fileInput').click();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('fileInput').addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        uploadedImageData = ev.target.result;
+        showUploadPreview();
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  });
+  showPage('dashboard');
+});
+
+let uploadedImageData = null;
+
+function useDemoImage() {
+  uploadedImageData = 'demo';
+  showUploadPreview();
+}
+
+function showUploadPreview() {
+  document.getElementById('uploadZone').classList.add('hidden');
+  document.getElementById('uploadPreview').classList.remove('hidden');
+  drawSiteImage(false);
+  showToast('Photograph uploaded successfully ✓');
+}
+
+function drawSiteImage(withDetections) {
+  const canvas = document.getElementById('previewCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+
+  // Draw background scene
+  ctx.fillStyle = '#87CEEB';
+  ctx.fillRect(0, 0, w, h);
+
+  // Sky gradient
+  const skyGrad = ctx.createLinearGradient(0, 0, 0, h * 0.55);
+  skyGrad.addColorStop(0, '#6BB3E0');
+  skyGrad.addColorStop(1, '#B5D8F0');
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(0, 0, w, h * 0.55);
+
+  // Ground
+  const gndGrad = ctx.createLinearGradient(0, h * 0.55, 0, h);
+  gndGrad.addColorStop(0, '#8B9A6B');
+  gndGrad.addColorStop(0.3, '#7A8B5C');
+  gndGrad.addColorStop(1, '#6B7A4D');
+  ctx.fillStyle = gndGrad;
+  ctx.fillRect(0, h * 0.55, w, h * 0.45);
+
+  // Road
+  ctx.fillStyle = '#555';
+  ctx.fillRect(0, h * 0.7, w, h * 0.08);
+  ctx.strokeStyle = '#FFD700';
+  ctx.setLineDash([15, 10]);
+  ctx.beginPath();
+  ctx.moveTo(0, h * 0.74);
+  ctx.lineTo(w, h * 0.74);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Buildings in background
+  ctx.fillStyle = '#9BA3AD';
+  ctx.fillRect(20, h*0.35, 50, h*0.2);
+  ctx.fillStyle = '#A8B0B8';
+  ctx.fillRect(80, h*0.38, 40, h*0.17);
+  ctx.fillStyle = '#8A929A';
+  ctx.fillRect(400, h*0.32, 60, h*0.23);
+  ctx.fillStyle = '#96A0AA';
+  ctx.fillRect(470, h*0.36, 45, h*0.19);
+
+  // Draw 3 poles
+  drawPole(ctx, 150, h, 0.52, '#5C4033');  // Pole 1
+  drawPole(ctx, 300, h, 0.50, '#5C4033');  // Pole 2
+  drawPole(ctx, 450, h, 0.48, '#6B5040');  // Pole 3
+
+  // Wires between poles
+  ctx.strokeStyle = '#333';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(150, h * 0.18);
+  ctx.quadraticCurveTo(225, h * 0.22, 300, h * 0.20);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(300, h * 0.20);
+  ctx.quadraticCurveTo(375, h * 0.24, 450, h * 0.22);
+  ctx.stroke();
+
+  // Second wire set
+  ctx.beginPath();
+  ctx.moveTo(150, h * 0.21);
+  ctx.quadraticCurveTo(225, h * 0.25, 300, h * 0.23);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(300, h * 0.23);
+  ctx.quadraticCurveTo(375, h * 0.27, 450, h * 0.25);
+  ctx.stroke();
+
+  // Pole ID labels (barely visible to simulate real-world)
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.fillRect(140, h*0.42, 22, 14);
+  ctx.fillStyle = '#333';
+  ctx.font = '7px monospace';
+  ctx.fillText('P-102', 141, h*0.42+10);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.4)'; // more faded
+  ctx.fillRect(290, h*0.44, 22, 14);
+  ctx.fillStyle = '#888';
+  ctx.font = '6px monospace';
+  ctx.fillText('P-1??', 291, h*0.44+10);
+
+  // NSC site marker
+  ctx.fillStyle = '#dc2626';
+  ctx.beginPath();
+  ctx.arc(230, h * 0.63, 8, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = 'white';
+  ctx.font = 'bold 9px sans-serif';
+  ctx.fillText('NSC', 220, h * 0.66);
+
+  // Trees
+  drawTree(ctx, 510, h * 0.55);
+  drawTree(ctx, 540, h * 0.57);
+  drawTree(ctx, 35, h * 0.56);
+
+  if (withDetections) {
+    const boxes = [
+      { x: 125, y: h*0.12, w: 52, h: h*0.56, color: '#22c55e', label: 'Pole 1 — 96%', id: 'P-102' },
+      { x: 275, y: h*0.14, w: 52, h: h*0.54, color: '#3b82f6', label: 'Pole 2 — 89%', id: 'P-108' },
+      { x: 425, y: h*0.16, w: 52, h: h*0.52, color: '#f59e0b', label: 'Pole 3 — 81%', id: 'P-115' },
+    ];
+
+    boxes.forEach(b => {
+      ctx.strokeStyle = b.color;
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([6, 3]);
+      ctx.strokeRect(b.x, b.y, b.w, b.h);
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = b.color;
+      ctx.fillRect(b.x, b.y - 18, ctx.measureText(b.label).width + 14, 18);
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 10px sans-serif';
+      ctx.fillText(b.label, b.x + 6, b.y - 5);
+    });
+  }
+
+  // Watermark
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.font = '10px sans-serif';
+  ctx.fillText('Site Photo — Sector 5 — Demo', 10, h - 8);
+}
+
+function drawPole(ctx, x, h, topRatio, color) {
+  // Main pole
+  ctx.fillStyle = color;
+  ctx.fillRect(x - 4, h * topRatio * 0.35, 8, h - h * topRatio * 0.35 - h * 0.22);
+
+  // Cross arm
+  ctx.fillStyle = '#444';
+  ctx.fillRect(x - 25, h * topRatio * 0.37, 50, 4);
+
+  // Insulators
+  ctx.fillStyle = '#888';
+  [x-22, x-10, x+10, x+22].forEach(ix => {
+    ctx.fillRect(ix-2, h * topRatio * 0.37 - 6, 4, 6);
+  });
+}
+
+function drawTree(ctx, x, baseY) {
+  ctx.fillStyle = '#3d6b35';
+  ctx.beginPath();
+  ctx.moveTo(x, baseY - 30);
+  ctx.lineTo(x - 15, baseY);
+  ctx.lineTo(x + 15, baseY);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = '#5C4033';
+  ctx.fillRect(x - 3, baseY, 6, 12);
+}
+
+function startAnalysis() {
+  currentStep = 2;
+  document.getElementById('assessmentContainer').innerHTML = renderStepProgress(2) + stepProcessing();
+  scrollTop();
+  runProcessingAnimation();
+}
+
+function stepProcessing() {
+  return `
+  <div class="fade-in">
+    <h1 class="page-title">AI Analysis</h1>
+    <p class="page-subtitle">Processing site photograph...</p>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-body" style="text-align:center;">
+          <canvas id="previewCanvas" width="560" height="380" style="border-radius:var(--radius);max-width:100%;"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>🔍 AI Processing</h3></div>
+        <div class="card-body">
+          <ul class="process-steps" id="processSteps">
+            <li class="process-step active" id="ps1"><span class="icon"><div class="spinner"></div></span> Checking image quality...</li>
+            <li class="process-step" id="ps2"><span class="icon">○</span> Detecting electrical infrastructure...</li>
+            <li class="process-step" id="ps3"><span class="icon">○</span> Identifying candidate poles...</li>
+            <li class="process-step" id="ps4"><span class="icon">○</span> Matching against Sector 5 pole database...</li>
+            <li class="process-step" id="ps5"><span class="icon">○</span> Retrieving GIS information...</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function runProcessingAnimation() {
+  drawSiteImage(false);
+  const steps = ['ps1','ps2','ps3','ps4','ps5'];
+  let i = 0;
+
+  function advance() {
+    if (i >= steps.length) {
+      // Done — show detections
+      setTimeout(() => {
+        drawSiteImage(true);
+        showToast('3 poles detected ✓');
+        setTimeout(() => showDetectionResults(), 800);
+      }, 400);
+      return;
+    }
+
+    const el = document.getElementById(steps[i]);
+    if (!el) return;
+    el.classList.remove('active');
+    el.classList.add('done');
+    el.querySelector('.icon').innerHTML = '✓';
+
+    if (i === 1) drawSiteImage(true);
+
+    i++;
+    if (i < steps.length) {
+      const next = document.getElementById(steps[i]);
+      if (next) {
+        next.classList.add('active');
+        next.querySelector('.icon').innerHTML = '<div class="spinner"></div>';
+      }
+    }
+
+    setTimeout(advance, 600);
+  }
+
+  setTimeout(advance, 700);
+}
+
+function showDetectionResults() {
+  currentStep = 2;
+  document.getElementById('assessmentContainer').innerHTML = renderStepProgress(2) + stepDetection();
+  scrollTop();
+  drawSiteImage(true);
+}
+
+function stepDetection() {
+  return `
+  <div class="fade-in">
+    <h1 class="page-title">AI Pole Detection</h1>
+    <p class="page-subtitle">Detected electrical infrastructure in the site photograph</p>
+    <div class="grid-2 mb-24">
+      <div class="card">
+        <div class="card-header"><h3>📸 Detection Results</h3><span class="badge badge-green">3 Poles Detected</span></div>
+        <div class="card-body" style="text-align:center;">
+          <canvas id="previewCanvas" width="560" height="380" style="border-radius:var(--radius);max-width:100%;"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>🎯 AI Detection Summary</h3></div>
+        <div class="card-body">
+          <div style="margin-bottom:16px;">
+            <div class="stat-label">Detected Objects</div>
+            <div style="font-size:16px;font-weight:700;color:var(--navy);">Electrical Pole × 3</div>
+          </div>
+
+          <div style="margin-bottom:20px;">
+            <div class="stat-label" style="margin-bottom:8px;">Detection Confidence</div>
+            ${CANDIDATES.map((c,i) => {
+              const colors = ['#22c55e','#3b82f6','#f59e0b'];
+              return `<div style="margin-bottom:8px;">
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px;">
+                  <span>Candidate Pole ${i+1}</span>
+                  <strong style="color:${colors[i]}">${c.confidence}%</strong>
+                </div>
+                <div class="score-bar"><div class="score-bar-fill" style="width:${c.confidence}%;background:${colors[i]};"></div></div>
+              </div>`;
+            }).join('')}
+          </div>
+
+          <div style="padding:12px;background:var(--gray-50);border-radius:8px;font-size:12px;color:var(--gray-500);border:1px solid var(--gray-200);">
+            ℹ️ Detection results are simulated for demonstration. In production, YOLO-based object detection would be used.
+          </div>
+
+          <button class="btn btn-primary mt-16" style="width:100%;" onclick="showPoleIdStep()">Continue to Pole Identification →</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function showPoleIdStep() {
+  currentStep = 3;
+  document.getElementById('assessmentContainer').innerHTML = renderStepProgress(3) + stepPoleId();
+  scrollTop();
+}
+
+function stepPoleId() {
+  return `
+  <div class="fade-in">
+    <h1 class="page-title">Pole ID Resolution</h1>
+    <p class="page-subtitle">Step 4 — Attempting to read pole identification</p>
+    <div class="grid-2 mb-24">
+      <div class="card">
+        <div class="card-header"><h3>✅ Candidate Pole 1</h3><span class="badge badge-green">ID Resolved</span></div>
+        <div class="card-body">
+          <div class="pole-info-grid">
+            <div class="pole-info-item"><div class="label">Method</div><div class="value">OCR</div></div>
+            <div class="pole-info-item"><div class="label">Detected Text</div><div class="value">P-102</div></div>
+            <div class="pole-info-item"><div class="label">Confidence</div><div class="value" style="color:var(--green)">94%</div></div>
+            <div class="pole-info-item"><div class="label">Status</div><div class="value" style="color:var(--green)">✓ Matched</div></div>
+          </div>
+          <div class="ai-box">
+            <h4>✓ Pole ID Detected: P-102</h4>
+            <p>OCR successfully read the pole identification plate. Matched against Sector 5 database.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>⚠️ Candidate Pole 2</h3><span class="badge badge-amber">ID Unreadable</span></div>
+        <div class="card-body">
+          <div class="pole-info-grid">
+            <div class="pole-info-item"><div class="label">Method</div><div class="value">OCR</div></div>
+            <div class="pole-info-item"><div class="label">Detected Text</div><div class="value" style="color:var(--red)">P-1?? (partial)</div></div>
+            <div class="pole-info-item"><div class="label">Confidence</div><div class="value" style="color:var(--red)">23%</div></div>
+            <div class="pole-info-item"><div class="label">QR Code</div><div class="value" style="color:var(--red)">Not Found</div></div>
+          </div>
+          <div class="fallback-box">
+            <h4>⚠️ Pole ID / QR Unreadable</h4>
+            <p>ID could not be reliably read. Switching to visual + GIS matching.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-24">
+      <div class="card-header"><h3>🔄 Fallback: Visual + GIS Matching</h3><span class="badge badge-blue">Automatic Fallback</span></div>
+      <div class="card-body">
+        <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+          <div style="flex:1;min-width:280px;">
+            <p style="font-size:14px;color:var(--gray-700);margin-bottom:16px;">
+              When pole identification cannot be read via OCR or QR code, Pole Nexus uses <strong>visual similarity analysis</strong> combined with <strong>spatial/GIS validation</strong> to identify the pole from the registered database.
+            </p>
+            <ul class="process-steps">
+              <li class="process-step done"><span class="icon">✓</span> Visual feature extraction from photograph</li>
+              <li class="process-step done"><span class="icon">✓</span> Spatial proximity analysis using GPS metadata</li>
+              <li class="process-step done"><span class="icon">✓</span> Cross-reference with Sector 5 pole database</li>
+              <li class="process-step done"><span class="icon">✓</span> GIS consistency verification</li>
+              <li class="process-step done"><span class="icon">✓</span> Network topology validation</li>
+            </ul>
+          </div>
+          <div style="flex:0 0 280px;">
+            <div class="ai-box" style="border-color:var(--blue);background:var(--blue-pale);">
+              <h4 style="color:var(--blue);">🎯 Fallback Match Result</h4>
+              <p style="margin-top:8px;">
+                <strong style="font-size:18px;color:var(--navy);">Likely Registered Pole: P-108</strong><br>
+                <span style="font-size:14px;color:var(--blue);">Confidence: 91%</span>
+              </p>
+              <p style="margin-top:8px;font-size:12px;color:var(--gray-600);">
+                Matched using visual similarity (pole type, height, cross-arm configuration) + spatial proximity (52m from NSC site) + GIS consistency (same feeder line).
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-24">
+      <div class="card-header"><h3>🔎 Candidate Pole 3</h3><span class="badge badge-green">Matched via GIS</span></div>
+      <div class="card-body">
+        <div class="pole-info-grid" style="grid-template-columns:repeat(4,1fr);">
+          <div class="pole-info-item"><div class="label">Pole ID</div><div class="value">P-115</div></div>
+          <div class="pole-info-item"><div class="label">Method</div><div class="value">GIS Proximity</div></div>
+          <div class="pole-info-item"><div class="label">Distance</div><div class="value">71 m</div></div>
+          <div class="pole-info-item"><div class="label">Confidence</div><div class="value" style="color:var(--amber)">81%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;">
+      <button class="btn btn-primary btn-lg" onclick="showMatchingStep()">Continue to Candidate Matching →</button>
+    </div>
+  </div>`;
+}
+
+function showMatchingStep() {
+  currentStep = 4;
+  document.getElementById('assessmentContainer').innerHTML = renderStepProgress(4) + stepMatching();
+  showToast('3 nearby candidates found ✓');
+  scrollTop();
+}
+
+function stepMatching() {
+  return `
+  <div class="fade-in">
+    <h1 class="page-title">Area Database Matching</h1>
+    <p class="page-subtitle">Candidate poles matched against Sector 5 registered inventory</p>
+
+    <div class="card mb-24">
+      <div class="card-header"><h3>🗄️ Registered Candidates Found</h3><span class="badge badge-green">3 Matches</span></div>
+      <div class="card-body" style="padding:0;">
+        ${CANDIDATES.map((c,i) => {
+          const p = POLES.find(pp => pp.id === c.id);
+          const colors = ['var(--green)','var(--blue)','var(--amber)'];
+          const icons = ['🟢','🔵','🟠'];
+          return `<div class="compare-row ${i===0?'highlight':''}" style="cursor:pointer;" onclick="showGISMap()">
+            <span style="font-size:18px;">${icons[i]}</span>
+            <div class="compare-pole-id">${c.id}</div>
+            <div class="compare-detail">
+              <span>📏 ${c.distance} m</span>
+              <span>🔌 ${p.transformer} (${p.txCapacity} kVA)</span>
+              <span>⚡ ${p.feeder}</span>
+              <span>Available: ${p.availableCapacity} kVA</span>
+            </div>
+            <div class="badge ${i===0?'badge-green':i===1?'badge-blue':'badge-amber'}">${c.confidence}% match</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div style="padding:14px 18px;background:var(--gray-50);border-radius:var(--radius);border:1px solid var(--gray-200);font-size:13px;color:var(--gray-600);margin-bottom:24px;">
+      ℹ️ Candidate poles were filtered using the selected service area and spatial proximity, then ranked using visual and network consistency.
+    </div>
+
+    <div style="text-align:center;">
+      <button class="btn btn-primary btn-lg" onclick="showGISMap()">View on GIS Map →</button>
+    </div>
+  </div>`;
+}
+
+function renderMap(selectedPole, standalone) {
+  const markerData = [
+    { id:'P-102', x:38, y:52, color:'#22c55e', dist:'35 m' },
+    { id:'P-108', x:55, y:38, color:'#3b82f6', dist:'52 m' },
+    { id:'P-115', x:70, y:60, color:'#f59e0b', dist:'71 m' },
+    { id:'P-121', x:25, y:35, color:'#94a3b8', dist:'' },
+    { id:'P-124', x:58, y:25, color:'#94a3b8', dist:'' },
+    { id:'P-130', x:20, y:68, color:'#94a3b8', dist:'' },
+  ];
+
+  const nscMarker = { x: 45, y: 55 };
+
+  let markersHTML = '';
+
+  // Road lines
+  const roads = `
+    <div class="map-road" style="top:30%;left:0;width:100%;height:4px;transform:rotate(-5deg);"></div>
+    <div class="map-road" style="top:50%;left:0;width:100%;height:3px;"></div>
+    <div class="map-road" style="top:20%;left:30%;width:3px;height:60%;"></div>
+    <div class="map-road" style="top:10%;left:60%;width:3px;height:70%;transform:rotate(3deg);"></div>
+    <div class="map-road" style="top:65%;left:0;width:100%;height:3px;transform:rotate(2deg);"></div>
+  `;
+
+  // NSC site
+  markersHTML += `
+    <div class="map-marker" style="left:${nscMarker.x}%;top:${nscMarker.y}%;">
+      <div class="map-marker-label" style="background:var(--red);">📍 NSC Site</div>
+      <div class="map-marker-dot" style="background:var(--red);width:20px;height:20px;"></div>
+    </div>
+  `;
+
+  // Poles
+  markerData.forEach(m => {
+    const isCandidate = ['P-102','P-108','P-115'].includes(m.id);
+    const isSelected = selectedPole === m.id;
+    const size = isCandidate ? (isSelected ? '22px' : '16px') : '10px';
+    const showLabel = isCandidate || standalone;
+    markersHTML += `
+      <div class="map-marker" style="left:${m.x}%;top:${m.y}%;" ${isCandidate?`onclick="showMapPopup('${m.id}',${m.x},${m.y})"`:''}  >
+        ${showLabel ? `<div class="map-marker-label" style="${isSelected?'background:var(--green);':isCandidate?'':'background:var(--gray-500);'}">${m.id}${m.dist?' — '+m.dist:''}</div>` : ''}
+        <div class="map-marker-dot" style="background:${m.color};width:${size};height:${size};${isSelected?'box-shadow:0 0 0 4px rgba(34,197,94,.3);':''}"></div>
+      </div>
+    `;
+  });
+
+  // Distance lines from NSC to candidates
+  if (!standalone) {
+    // SVG lines
+    markersHTML += `
+    <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5;">
+      <line x1="${nscMarker.x}%" y1="${nscMarker.y}%" x2="38%" y2="52%" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="5,3" opacity=".6"/>
+      <line x1="${nscMarker.x}%" y1="${nscMarker.y}%" x2="55%" y2="38%" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="5,3" opacity=".4"/>
+      <line x1="${nscMarker.x}%" y1="${nscMarker.y}%" x2="70%" y2="60%" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3" opacity=".3"/>
+    </svg>`;
+  }
+
+  const legend = `
+    <div class="map-legend">
+      <div style="font-weight:700;font-size:11px;margin-bottom:4px;">Legend</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red);"></div> NSC Site</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#22c55e;"></div> P-102 (35m)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#3b82f6;"></div> P-108 (52m)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;"></div> P-115 (71m)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#94a3b8;"></div> Other Poles</div>
+    </div>
+  `;
+
+  const mapLabel = `<div style="position:absolute;top:12px;right:12px;background:white;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:700;color:var(--navy);box-shadow:var(--shadow);">Sector 5 — GIS View</div>`;
+
+  return `<div class="map-container">
+    <div class="map-grid"></div>
+    ${roads}
+    ${markersHTML}
+    ${legend}
+    ${mapLabel}
+    <div id="mapPopup" class="map-popup hidden"></div>
+  </div>`;
+}
+
+function showMapPopup(poleId, x, y) {
+  const p = POLES.find(pp => pp.id === poleId);
+  const c = CANDIDATES.find(cc => cc.id === poleId);
+  const popup = document.getElementById('mapPopup');
+  if (!popup || !p) return;
+
+  popup.innerHTML = `
+    <h4>${p.id}</h4>
+    <div class="row"><span class="lbl">Distance</span><span class="val">${c?c.distance+' m':'—'}</span></div>
+    <div class="row"><span class="lbl">Transformer</span><span class="val">${p.transformer}</span></div>
+    <div class="row"><span class="lbl">Feeder</span><span class="val">${p.feeder}</span></div>
+    <div class="row"><span class="lbl">Available</span><span class="val">${p.availableCapacity} kVA</span></div>
+    <div class="row"><span class="lbl">Status</span><span class="val">${p.status}</span></div>
+  `;
+
+  popup.style.left = Math.min(x + 5, 65) + '%';
+  popup.style.top = Math.max(y - 25, 5) + '%';
+  popup.classList.remove('hidden');
+
+  setTimeout(() => {
+    document.addEventListener('click', function handler(e) {
+      if (!popup.contains(e.target)) {
+        popup.classList.add('hidden');
+        document.removeEventListener('click', handler);
+      }
+    });
+  }, 100);
+}
+
+function showGISMap() {
+  currentStep = 5;
+  document.getElementById('assessmentContainer').innerHTML = renderStepProgress(5) + stepGISMap();
+  scrollTop();
+}
+
+function stepGISMap() {
+  return `
+  <div class="fade-in">
+    <h1 class="page-title">GIS Map — Candidate Poles</h1>
+    <p class="page-subtitle">Spatial view of candidate poles relative to the proposed NSC site</p>
+    <div class="card mb-24">
+      <div class="card-body" style="padding:12px;">
+        ${renderMap('P-102', false)}
+      </div>
+    </div>
+    <div style="text-align:center;">
+      <button class="btn btn-primary btn-lg" onclick="showChainStep()">View Physical → Digital Linking →</button>
+    </div>
+  </div>`;
+}
+
+function showChainStep() {
+  currentStep = 6;
+  document.getElementById('assessmentContainer').innerHTML = renderStepProgress(6) + stepChainAndNetwork();
+  showToast('Network information retrieved ✓');
+  scrollTop();
+}
+
+function stepChainAndNetwork() {
+  const p = POLES[0]; // P-102
+  return `
+  <div class="fade-in">
+    <h1 class="page-title">Physical → Digital Network Linking</h1>
+    <p class="page-subtitle">Converting a physical pole seen in a photograph into a digital network identity</p>
+
+    <div class="card mb-24">
+      <div class="card-header"><h3>🔗 Identity Chain</h3><span class="badge badge-green">Linked Successfully</span></div>
+      <div class="card-body" style="overflow-x:auto;">
+        <div class="chain-flow">
+          <div class="chain-node" style="border-color:var(--gray-400);"><div class="label">Photograph</div><div class="value">📸 Site Image</div></div>
+          <div class="chain-arrow">→</div>
+          <div class="chain-node"><div class="label">Pole</div><div class="value">P-102</div></div>
+          <div class="chain-arrow">→</div>
+          <div class="chain-node"><div class="label">GIS Location</div><div class="value">28.614°, 77.209°</div></div>
+          <div class="chain-arrow">→</div>
+          <div class="chain-node"><div class="label">Transformer</div><div class="value">T-07</div></div>
+          <div class="chain-arrow">→</div>
+          <div class="chain-node"><div class="label">Feeder</div><div class="value">F-03</div></div>
+          <div class="chain-arrow">→</div>
+          <div class="chain-node"><div class="label">Connections</div><div class="value">18</div></div>
+          <div class="chain-arrow">→</div>
+          <div class="chain-node" style="border-color:var(--green);"><div class="label">Load / Capacity</div><div class="value">68 / 100 kVA</div></div>
+        </div>
+        <p style="text-align:center;font-size:12px;color:var(--gray-500);margin-top:12px;">
+          "We convert a physical pole seen in a photograph into a digital network identity."
+        </p>
+      </div>
+    </div>
+
+    <h2 style="font-size:18px;font-weight:700;color:var(--navy);margin-bottom:16px;">Network Intelligence — Pole P-102</h2>
+    <div class="card mb-24">
+      <div class="card-body">
+        <div class="pole-info-grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;">
+          <div class="pole-info-item"><div class="label">Pole ID</div><div class="value">P-102</div></div>
+          <div class="pole-info-item"><div class="label">Transformer</div><div class="value">T-07</div></div>
+          <div class="pole-info-item"><div class="label">TX Capacity</div><div class="value">100 kVA</div></div>
+          <div class="pole-info-item"><div class="label">Existing Load</div><div class="value">68 kVA</div></div>
+          <div class="pole-info-item"><div class="label">Available Capacity</div><div class="value" style="color:var(--green)">32 kVA</div></div>
+          <div class="pole-info-item"><div class="label">Feeder</div><div class="value">F-03</div></div>
+          <div class="pole-info-item"><div class="label">Phase</div><div class="value">3-Phase</div></div>
+          <div class="pole-info-item"><div class="label">Voltage</div><div class="value">11 kV</div></div>
+          <div class="pole-info-item"><div class="label">Site Distance</div><div class="value">35 m</div></div>
+          <div class="pole-info-item"><div class="label">Existing Connections</div><div class="value">18</div></div>
+          <div class="pole-info-item"><div class="label">Pole Type</div><div class="value">Steel Tubular</div></div>
+          <div class="pole-info-item"><div class="label">Status</div><div class="value" style="color:var(--green)">Active</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;">
+      <button class="btn btn-primary btn-lg" onclick="showFeasibility()">Run NSC Feasibility Assessment →</button>
+    </div>
+  </div>`;
+}
+
+function showFeasibility() {
+  currentStep = 7;
+  document.getElementById('assessmentContainer').innerHTML = renderStepProgress(7) + stepFeasibility();
+  showToast('Assessment completed ✓');
+  scrollTop();
+}
+
+function stepFeasibility() {
+  return `
+  <div class="fade-in">
+    <h1 class="page-title">NSC Feasibility Assessment</h1>
+    <p class="page-subtitle">Evaluating proposed connection: NSC-2026-0142 — Required Load: 8 kVA</p>
+
+    <div class="grid-2 mb-24">
+      <div class="card">
+        <div class="card-header"><h3>📋 Feasibility Checks</h3></div>
+        <div class="card-body" style="padding:0 20px;">
+          <ul class="check-list">
+            <li class="check-item">
+              <span class="check-icon" style="color:var(--green)">✓</span>
+              <div>
+                <strong>Capacity</strong><br>
+                <span style="font-size:13px;color:var(--gray-600);">Available: 32 kVA | Required: 8 kVA — <strong style="color:var(--green)">Sufficient capacity</strong></span>
+              </div>
+            </li>
+            <li class="check-item">
+              <span class="check-icon" style="color:var(--green)">✓</span>
+              <div>
+                <strong>Distance</strong><br>
+                <span style="font-size:13px;color:var(--gray-600);">Pole → NSC: 35 m — <strong style="color:var(--green)">Within acceptable range</strong></span>
+              </div>
+            </li>
+            <li class="check-item">
+              <span class="check-icon" style="color:var(--green)">✓</span>
+              <div>
+                <strong>Existing Load</strong><br>
+                <span style="font-size:13px;color:var(--gray-600);">Current: 68 kVA on T-07 (100 kVA) — <strong style="color:var(--green)">Evaluated</strong></span>
+              </div>
+            </li>
+            <li class="check-item">
+              <span class="check-icon" style="color:var(--green)">✓</span>
+              <div>
+                <strong>Phase / Voltage</strong><br>
+                <span style="font-size:13px;color:var(--gray-600);">3-Phase / 11 kV — <strong style="color:var(--green)">Compatible</strong></span>
+              </div>
+            </li>
+            <li class="check-item">
+              <span class="check-icon" style="color:var(--green)">✓</span>
+              <div>
+                <strong>Network Constraints</strong><br>
+                <span style="font-size:13px;color:var(--gray-600);">Feeder F-03 / Transformer T-07 — <strong style="color:var(--green)">No blocking constraint detected</strong></span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="display:flex;flex-direction:column;justify-content:center;">
+        <div class="card-body">
+          <div class="feasibility-result">
+            <div class="feasibility-icon">🟢</div>
+            <div class="feasibility-label" style="color:var(--green);">FEASIBLE</div>
+            <div class="feasibility-note">System assessment — final decision by authorized technician.</div>
+
+            <div style="margin-top:24px;text-align:left;padding:16px;background:var(--green-bg);border-radius:var(--radius);border:1px solid var(--green);">
+              <div style="font-size:13px;color:var(--gray-600);margin-bottom:8px;">Summary</div>
+              <div style="font-size:14px;color:var(--gray-800);">
+                Pole <strong>P-102</strong> has sufficient available capacity (<strong>32 kVA</strong>) to support the requested <strong>8 kVA</strong> load. The pole is within acceptable distance (<strong>35 m</strong>) and no network constraints were detected on feeder <strong>F-03</strong> / transformer <strong>T-07</strong>.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;">
+      <button class="btn btn-primary btn-lg" onclick="showComparison()">View Multi-Pole Comparison →</button>
+    </div>
+  </div>`;
+}
+
+function showComparison() {
+  currentStep = 8;
+  document.getElementById('assessmentContainer').innerHTML = renderStepProgress(8) + stepComparison();
+  scrollTop();
+}
+
+function stepComparison() {
+  const candidates = [
+    { id:'P-102', distance:35, available:32, compat:'High', score:88, color:'var(--green)', reasons:['Strong capacity availability','Shorter site distance','Compatible network','Suitable load condition'] },
+    { id:'P-108', distance:52, available:18, compat:'High', score:74, color:'var(--blue)', reasons:['Adequate capacity','Moderate distance','Compatible network','Higher existing load'] },
+    { id:'P-115', distance:71, available:6, compat:'Review', score:41, color:'var(--amber)', reasons:['Limited capacity','Greater distance','Transformer near capacity','Review recommended'] },
+  ];
+
+  return `
+  <div class="fade-in">
+    <h1 class="page-title">Explainable Multi-Pole Comparison</h1>
+    <p class="page-subtitle">Candidate poles ranked by suitability for NSC-2026-0142 (8 kVA)</p>
+
+    <div class="card mb-24">
+      <div class="card-header"><h3>📊 Candidate Pole Comparison</h3><span style="font-size:11px;color:var(--gray-400);">Demo suitability score</span></div>
+      <div class="card-body" style="padding:0;">
+        <table class="data-table">
+          <thead>
+            <tr><th>Pole</th><th>Distance</th><th>Available Capacity</th><th>Network Compatibility</th><th>Candidate Score</th></tr>
+          </thead>
+          <tbody>
+            ${candidates.map((c,i) => `
+              <tr style="${i===0?'background:var(--green-bg);':''}">
+                <td><strong style="font-size:15px;">${c.id}</strong> ${i===0?'<span class="badge badge-green" style="margin-left:6px;">★ Best</span>':''}</td>
+                <td>${c.distance} m</td>
+                <td>${c.available} kVA</td>
+                <td><span class="badge ${c.compat==='High'?'badge-green':'badge-amber'}">${c.compat}</span></td>
+                <td>
+                  <div class="score-bar-container">
+                    <div class="score-bar" style="width:120px;"><div class="score-bar-fill" style="width:${c.score}%;background:${c.color};"></div></div>
+                    <span class="score-value" style="color:${c.color};">${c.score}%</span>
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid-2 mb-24">
+      <div class="card">
+        <div class="card-header"><h3>💡 Why P-102?</h3></div>
+        <div class="card-body">
+          <ul class="why-list">
+            ${candidates[0].reasons.map(r => `<li class="why-item"><span style="color:var(--green);font-size:16px;">✓</span> ${r}</li>`).join('')}
+          </ul>
+          <div style="margin-top:16px;padding:12px;background:var(--gray-50);border-radius:8px;font-size:12px;color:var(--gray-500);">
+            Score based on: Capacity availability, site distance, existing load, network compatibility. Presented as a demo suitability score for decision support.
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>📈 Score Breakdown</h3></div>
+        <div class="card-body">
+          ${[
+            {label:'Capacity', p102:95, p108:72, p115:20},
+            {label:'Distance', p102:90, p108:70, p115:45},
+            {label:'Load Condition', p102:82, p108:65, p115:38},
+            {label:'Network Compat.', p102:88, p108:85, p115:55},
+          ].map(f => `
+            <div style="margin-bottom:14px;">
+              <div style="font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px;">${f.label}</div>
+              <div style="display:flex;gap:8px;align-items:center;font-size:11px;">
+                <span style="min-width:36px;color:var(--green);font-weight:700;">P-102</span>
+                <div class="score-bar" style="flex:1;"><div class="score-bar-fill" style="width:${f.p102}%;background:var(--green);"></div></div>
+                <span style="min-width:24px;font-weight:600;">${f.p102}</span>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;font-size:11px;margin-top:3px;">
+                <span style="min-width:36px;color:var(--blue);font-weight:700;">P-108</span>
+                <div class="score-bar" style="flex:1;"><div class="score-bar-fill" style="width:${f.p108}%;background:var(--blue);"></div></div>
+                <span style="min-width:24px;font-weight:600;">${f.p108}</span>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;font-size:11px;margin-top:3px;">
+                <span style="min-width:36px;color:var(--amber);font-weight:700;">P-115</span>
+                <div class="score-bar" style="flex:1;"><div class="score-bar-fill" style="width:${f.p115}%;background:var(--amber);"></div></div>
+                <span style="min-width:24px;font-weight:600;">${f.p115}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center;">
+      <button class="btn btn-primary btn-lg" onclick="showDecision()">Proceed to Final Decision →</button>
+    </div>
+  </div>`;
+}
+
+function showDecision() {
+  currentStep = 9;
+  document.getElementById('assessmentContainer').innerHTML = renderStepProgress(9) + stepDecision();
+  scrollTop();
+}
+
+function stepDecision() {
+  return `
+  <div class="fade-in">
+    <h1 class="page-title">Technician Final Decision</h1>
+    <p class="page-subtitle">Review system recommendation and confirm or escalate</p>
+
+    <div class="grid-2 mb-24">
+      <div class="card">
+        <div class="card-header"><h3>🎯 System Recommendation</h3></div>
+        <div class="card-body text-center">
+          <div style="font-size:14px;color:var(--gray-500);margin-bottom:4px;">Recommended Pole</div>
+          <div style="font-size:36px;font-weight:800;color:var(--navy);margin-bottom:8px;">P-102</div>
+
+          <div style="display:flex;justify-content:center;gap:24px;margin:16px 0;">
+            <div>
+              <div style="font-size:12px;color:var(--gray-500);">Candidate Score</div>
+              <div style="font-size:28px;font-weight:800;color:var(--green);">88%</div>
+            </div>
+            <div>
+              <div style="font-size:12px;color:var(--gray-500);">Feasibility</div>
+              <div style="font-size:28px;">🟢</div>
+              <div style="font-size:13px;font-weight:700;color:var(--green);">Feasible</div>
+            </div>
+          </div>
+
+          <div style="padding:14px;background:var(--gray-50);border-radius:var(--radius);font-size:13px;color:var(--gray-700);text-align:left;margin-top:16px;border:1px solid var(--gray-200);">
+            <strong>Reason:</strong> Best overall candidate based on evaluated capacity (32 kVA available vs 8 kVA required), shortest distance (35 m), suitable load condition, and compatible network infrastructure.
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>📋 Assessment Summary</h3></div>
+        <div class="card-body">
+          <div class="pole-info-grid">
+            <div class="pole-info-item"><div class="label">Request ID</div><div class="value">NSC-2026-0142</div></div>
+            <div class="pole-info-item"><div class="label">Area</div><div class="value">Sector 5</div></div>
+            <div class="pole-info-item"><div class="label">Required Load</div><div class="value">8 kVA</div></div>
+            <div class="pole-info-item"><div class="label">Selected Pole</div><div class="value">P-102</div></div>
+            <div class="pole-info-item"><div class="label">Transformer</div><div class="value">T-07 (100 kVA)</div></div>
+            <div class="pole-info-item"><div class="label">Feeder</div><div class="value">F-03</div></div>
+            <div class="pole-info-item"><div class="label">Distance</div><div class="value">35 m</div></div>
+            <div class="pole-info-item"><div class="label">Available Capacity</div><div class="value" style="color:var(--green)">32 kVA</div></div>
+          </div>
+
+          <div style="margin-top:20px;padding:12px;background:var(--amber-light);border-radius:8px;font-size:13px;color:var(--gray-700);border:1px solid var(--amber);">
+            ⚠️ Final decision remains with the authorized technician. This is a decision-support system, not an automatic approval system.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-24">
+      <div class="card-body" style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;padding:24px;">
+        <button class="btn btn-success btn-lg" onclick="confirmAssessment()">✓ Confirm Candidate</button>
+        <button class="btn btn-outline btn-lg" onclick="sendForReview()">📤 Send for Review</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function confirmAssessment() {
+  document.getElementById('assessmentContainer').innerHTML = renderStepProgress(10) + stepConfirmed();
+  showToast('Assessment Saved ✓ — NSC-2026-0142');
+  scrollTop();
+}
+
+function sendForReview() {
+  showToast('Assessment sent for review — NSC-2026-0142');
+  document.getElementById('assessmentContainer').innerHTML = renderStepProgress(10) + stepConfirmed(true);
+  scrollTop();
+}
+
+function stepConfirmed(review) {
+  return `
+  <div class="fade-in">
+    <div class="card mb-24">
+      <div class="card-body">
+        <div class="final-screen">
+          <div style="font-size:48px;margin-bottom:8px;">${review?'📤':'✅'}</div>
+          <div style="font-size:24px;font-weight:800;color:var(--navy);">${review?'Assessment Sent for Review':'Assessment Saved'}</div>
+          <div style="margin-top:8px;">
+            <span class="badge badge-blue" style="font-size:14px;padding:6px 16px;">Assessment ID: NSC-2026-0142</span>
+          </div>
+
+          <hr class="section-break" style="max-width:400px;margin:24px auto;">
+
+          <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:8px;">
+            <div class="logo-icon" style="width:28px;height:28px;font-size:15px;">⚡</div>
+            <span style="font-size:22px;font-weight:800;color:var(--navy);">POLE NEXUS</span>
+          </div>
+          <div class="tagline">From Site Photograph to Network Intelligence</div>
+          <div class="flow-text">Detect → Identify → Match → Assess → Explain</div>
+          <div class="loop-msg">"AI-assisted NSC feasibility assessment with the technician always in the loop."</div>
+
+          <div class="wow-grid" style="max-width:600px;margin:28px auto 0;">
+            <div class="wow-card">
+              <div class="num">WOW 1</div>
+              <h4>Area-Wise Digital Pole Inventory</h4>
+              <p>Pre-stored registered poles for every service area.</p>
+            </div>
+            <div class="wow-card">
+              <div class="num">WOW 2</div>
+              <h4>Real-World Fallback</h4>
+              <p>Visual + GIS matching when OCR/QR fails.</p>
+            </div>
+            <div class="wow-card">
+              <div class="num">WOW 3</div>
+              <h4>Physical → Digital Linking</h4>
+              <p>Photograph → Pole → GIS → Transformer → Feeder → Load.</p>
+            </div>
+            <div class="wow-card">
+              <div class="num">WOW 4</div>
+              <h4>Explainable Comparison</h4>
+              <p>Multi-pole ranking with transparent reasoning.</p>
+            </div>
+          </div>
+
+          <div style="margin-top:28px;">
+            <button class="btn btn-primary" onclick="showPage('dashboard')">← Return to Dashboard</button>
+            <button class="btn btn-outline" style="margin-left:8px;" onclick="showPage('new-assessment')">+ New Assessment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ============ PAGE MANAGEMENT ============
+
+function showPage(page) {
+  const main = document.getElementById('mainContent');
+  currentStep = 0;
+
+  // Update nav
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.toggle('active', n.dataset.page === page);
+  });
+
+  switch(page) {
+    case 'dashboard':
+      main.innerHTML = dashboardHTML();
+      break;
+    case 'new-assessment':
+      main.innerHTML = assessmentHTML();
+      break;
+    case 'pole-database':
+      main.innerHTML = poleDatabaseHTML();
+      break;
+    case 'gis-map-page':
+      main.innerHTML = gisMapPageHTML();
+      break;
+    case 'history':
+      main.innerHTML = historyHTML();
+      break;
+  }
+
+  scrollTop();
+}
+
+function scrollTop() {
+  document.getElementById('mainContent').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Toast notification
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.innerHTML = `<span>✓</span> ${msg}`;
+  t.classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.add('hidden'), 3000);
+}
+</script>
+</body>
+</html>
